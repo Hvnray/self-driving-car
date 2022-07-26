@@ -19,9 +19,9 @@ export class Sensor {
 
   constructor(
     car: Car,
-    rayCount = 5,
+    rayCount = 8,
     rayLength = 150,
-    raySpreed = Math.PI / 4
+    raySpreed = Math.PI / 2
   ) {
     this.car = car;
     this.rayCount = rayCount;
@@ -30,22 +30,7 @@ export class Sensor {
     this.rays = [];
   }
   update() {
-    this.rays = [];
-    let index: number;
-    for (index = 0; index < this.rayCount; index++) {
-      const rayAngle =
-        lerp(
-          this.raySpreed / 2,
-          -this.raySpreed / 2,
-          index / (this.rayCount - 1)
-        ) + this.car.angle;
-      const start = { x: this.car.x, y: this.car.y };
-      const end = {
-        x: this.car.x - Math.sin(rayAngle) * this.rayLength,
-        y: this.car.y - Math.cos(rayAngle) * this.rayLength,
-      };
-      this.rays.push([start, end]);
-    }
+    this.#castRays();
   }
   draw(ctx: CanvasRenderingContext2D) {
     let i: number;
@@ -56,6 +41,24 @@ export class Sensor {
       ctx.moveTo(this.rays[i][0].x, this.rays[i][0].y);
       ctx.lineTo(this.rays[i][1].x, this.rays[i][1].y);
       ctx.stroke();
+    }
+  }
+  #castRays() {
+    this.rays = [];
+    let index: number;
+    for (index = 0; index < this.rayCount; index++) {
+      const rayAngle =
+        lerp(
+          this.raySpreed / 2,
+          -this.raySpreed / 2,
+          this.rayCount == 1 ? 0.5 : index / (this.rayCount - 1)
+        ) + this.car.angle;
+      const start = { x: this.car.x, y: this.car.y };
+      const end = {
+        x: this.car.x - Math.sin(rayAngle) * this.rayLength,
+        y: this.car.y - Math.cos(rayAngle) * this.rayLength,
+      };
+      this.rays.push([start, end]);
     }
   }
 }
