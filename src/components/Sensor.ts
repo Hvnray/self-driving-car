@@ -33,11 +33,12 @@ export class Sensor {
     this.rays = [];
     let index: number;
     for (index = 0; index < this.rayCount; index++) {
-      const rayAngle = lerp(
-        this.raySpreed / 2,
-        -this.raySpreed / 2,
-        index / (this.rayCount - 1)
-      );
+      const rayAngle =
+        lerp(
+          this.raySpreed / 2,
+          -this.raySpreed / 2,
+          index / (this.rayCount - 1)
+        ) + this.car.angle;
       const start = { x: this.car.x, y: this.car.y };
       const end = {
         x: this.car.x - Math.sin(rayAngle) * this.rayLength,
@@ -54,7 +55,7 @@ export class Sensor {
       ctx.strokeStyle = "yellow";
       ctx.moveTo(this.rays[i][0].x, this.rays[i][0].y);
       ctx.lineTo(this.rays[i][1].x, this.rays[i][1].y);
-      ctx.stroke()
+      ctx.stroke();
     }
   }
 }
