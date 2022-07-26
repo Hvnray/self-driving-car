@@ -1,4 +1,5 @@
 import { Controls } from "./Controls";
+import { Sensor } from "./Sensor";
 export interface CarConfig {
   x: number;
   y: number;
@@ -16,12 +17,14 @@ export class Car {
   maxSpeed: number = 3;
   friction: number = 0.05;
   angle: number = 0;
+  sensor: Sensor;
 
   constructor(parameters: CarConfig) {
     this.x = parameters.x;
     this.y = parameters.y;
     this.width = parameters.width;
     this.height = parameters.height;
+    this.sensor = new Sensor(this);
     this.controls = new Controls();
   }
   draw(ctx: CanvasRenderingContext2D) {
@@ -33,11 +36,13 @@ export class Car {
     ctx.rect(-this.width / 2, -this.height / 2, this.width, this.height);
     ctx.fill();
     ctx.restore();
+    this.sensor.draw(ctx);
   }
   update() {
-    this.#move()
+    this.#move();
+    this.sensor.update();
   }
-  #move(){
+  #move() {
     /**Foward and reverse implmentation */
     if (this.controls.forward) {
       this.speed += this.acceleration;
@@ -83,6 +88,5 @@ export class Car {
     this.x -= Math.sin(this.angle) * this.speed;
     this.y -= Math.cos(this.angle) * this.speed;
     // console.table(this,['property','value'])
-
   }
 }

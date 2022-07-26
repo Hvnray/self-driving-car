@@ -3,7 +3,7 @@ import { lerp } from "../utils";
 /**
  * Represents the border
  */
-interface borderPostions {
+export interface borderPostions {
   /**`x` represents the horizontal axis, left - right  */
   x: number;
   /**`y` represents the vertical axis, top - bottom  */
@@ -17,7 +17,7 @@ export class Road {
   right: number;
   top: number;
   bottom: number;
-  borders: borderPostions[][];
+  borders: [borderPostions, borderPostions][];
   constructor(x: number, width: number, laneCount = 3) {
     this.x = x;
     this.width = width;
@@ -65,14 +65,13 @@ export class Road {
     }
 
     //draw the borders
-    ctx.setLineDash([])
-    this.borders.forEach(border=>{
+    ctx.setLineDash([]);
+    this.borders.forEach((border) => {
       ctx.beginPath();
       ctx.moveTo(border[0].x, border[0].y);
       ctx.lineTo(border[1].x, border[1].y);
       ctx.stroke();
-
-    })
+    });
   }
   getLaneCenter(laneIndex: number) {
     const laneWidth = this.width / this.laneCount;
