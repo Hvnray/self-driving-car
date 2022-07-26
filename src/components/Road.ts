@@ -1,14 +1,6 @@
+import { BorderPostions, BordersSections } from "../types";
 import { lerp } from "../utils";
 
-/**
- * Represents the border
- */
-export interface borderPostions {
-  /**`x` represents the horizontal axis, left - right  */
-  x: number;
-  /**`y` represents the vertical axis, top - bottom  */
-  y: number;
-}
 export class Road {
   x: number;
   width: number;
@@ -17,7 +9,7 @@ export class Road {
   right: number;
   top: number;
   bottom: number;
-  borders: [borderPostions, borderPostions][];
+  borders: BordersSections;
   constructor(x: number, width: number, laneCount = 3) {
     this.x = x;
     this.width = width;
@@ -30,10 +22,10 @@ export class Road {
     this.top = -infinity;
     this.bottom = infinity;
 
-    const topLeft: borderPostions = { x: this.left, y: this.top };
-    const topRight: borderPostions = { x: this.right, y: this.top };
-    const bottomLeft: borderPostions = { x: this.left, y: this.bottom };
-    const bottomRight: borderPostions = { x: this.right, y: this.bottom };
+    const topLeft: BorderPostions = { x: this.left, y: this.top };
+    const topRight: BorderPostions = { x: this.right, y: this.top };
+    const bottomLeft: BorderPostions = { x: this.left, y: this.bottom };
+    const bottomRight: BorderPostions = { x: this.right, y: this.bottom };
 
     this.borders = [
       [topLeft, bottomLeft],

@@ -1,11 +1,7 @@
+import { BordersSections, CarConfig } from "../types";
 import { Controls } from "./Controls";
 import { Sensor } from "./Sensor";
-export interface CarConfig {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
+
 export class Car {
   x: number;
   y: number;
@@ -38,9 +34,9 @@ export class Car {
     ctx.restore();
     this.sensor.draw(ctx);
   }
-  update() {
+  update(roadBorders: BordersSections) {
     this.#move();
-    this.sensor.update();
+    this.sensor.update(roadBorders);
   }
   #move() {
     /**Foward and reverse implmentation */
