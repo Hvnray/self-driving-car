@@ -10,8 +10,8 @@ export default function startUpApp() {
   const car = new Car({
     x: road.getLaneCenter(1),
     y: 100,
-    width: 30,
-    height: 50,
+    width: 60,
+    height: 100,
   });
 
   const ctx = canvas.getContext("2d")!;
@@ -21,6 +21,8 @@ export default function startUpApp() {
     car.update();
 
     canvas.height = window.innerHeight;
+    ctx.save()
+    ctx.translate(0,-car.y+canvas.height*0.7)
     road.draw(ctx);
     car.draw(ctx);
     requestAnimationFrame(animate);
