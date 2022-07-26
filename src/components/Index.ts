@@ -5,10 +5,10 @@ export default function startUpApp() {
   const canvas = <HTMLCanvasElement>document.getElementById("canvas")!;
   canvas.width = 400;
 
-  const road = new Road(canvas.width / 2, canvas.width*0.9);
+  const road = new Road(canvas.width / 2, canvas.width * 0.9);
 
   const car = new Car({
-    x: 100,
+    x: road.getLaneCenter(1),
     y: 100,
     width: 30,
     height: 50,
