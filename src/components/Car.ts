@@ -1,4 +1,5 @@
 import { CarConfig, BordersSections, CarPolygonPoints } from "../types";
+import { polygonsIntersect } from "../utils";
 import { Controls } from "./Controls";
 import { Sensor } from "./Sensor";
 
@@ -20,8 +21,8 @@ export class Car {
   speed: number = 0;
   /** Denotes the change in speed of the car */
   acceleration: number = 0.2;
-  /** Denotes the Maximum speed he car can reach */
-  maxSpeed: number = 3;
+  /** Denotes the Maximum speed the car can reach */
+  maxSpeed: number;
   /** Denotes the friction car would apply to road */
   friction: number = 0.05;
   /**angle of the car */
@@ -29,7 +30,7 @@ export class Car {
   /** Used for car sensors(rays beaming off car) */
   sensor: Sensor;
   /**Used to evaluate if car gets damaged */
-  isDamaged: false;
+  isDamaged: boolean;
   /**Used to map points of the car */
   polygon: CarPolygonPoints[] = [];
 
@@ -40,15 +41,18 @@ export class Car {
    * @param {number} parameters.y - The initial vertical axis of the car i.e top to bottom.
    * @param {number} parameters.width - The width of the car.
    * @param {number} parameters.height - The height of the car.
+   * @param {number} parameters.controlType - Sets controlType for Current Car.
+   * @param {number} parameters.maxSpeed - The height of the car.
    */
   constructor(parameters: CarConfig) {
     this.x = parameters.x;
     this.y = parameters.y;
     this.width = parameters.width;
     this.height = parameters.height;
+    this.maxSpeed = parameters.maxSpeed || 3;
     this.isDamaged = false;
     this.sensor = new Sensor(this);
-    this.controls = new Controls();
+    this.controls = new Controls(parameters.controlType || "DUMMY");
   }
   /** Draw the car on a given canvas */
   draw(ctx: CanvasRenderingContext2D) {
@@ -62,6 +66,12 @@ export class Car {
     // ctx.fill();
     // ctx.restore();
 
+    //set the fill color of car incase car is damageds
+    if (this.isDamaged) {
+      ctx.fillStyle = "red";
+    } else {
+      ctx.fillStyle = "black";
+    }
     //draw car based of polygon points
     ctx.beginPath();
     //move to top right
@@ -76,9 +86,31 @@ export class Car {
   }
   /** Update and apply the various changes on car */
   update(roadBorders: BordersSections) {
-    this.#move();
-    this.polygon = this.#createPolygon();
+    if (!this.isDamaged) {
+      this.#move();
+      this.polygon = this.#createPolygon();
+      this.isDamaged = this.#assessDamages(roadBorders);
+    }
+    // else {
+    //   if (window.confirm("Your Car is Destroyed, Do you want to Fix?")) {
+    //     this.x =road.getLaneCenter(1)
+    //     this.isDamaged = false;
+    //   }
+    // }
     this.sensor.update(roadBorders);
+  }
+  /**
+   * Check if car colides with borders and traffic and deal damage
+   * @param {BordersSections} roadBorders the road boarders to check if car collides
+   * @returns {boolean} true if touches borders else false
+   */
+  #assessDamages(roadBorders: BordersSections): boolean {
+    for (let index = 0; index < roadBorders.length; index++) {
+      if (polygonsIntersect(this.polygon, roadBorders[index])) {
+        return true;
+      }
+    }
+    return false;
   }
   /** Creates the current points(borders?) of the car
    * @return {CarPolygonPoints[]} the new points(polygon) of car
