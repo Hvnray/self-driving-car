@@ -1,11 +1,17 @@
 import { Road } from "./Road";
 import { Car } from "./Car";
+import { Visualizer } from "./Visualizer";
 
 export default function startUpApp() {
-  const canvas = <HTMLCanvasElement>document.getElementById("canvas")!;
-  canvas.width = 400;
+  const carCanvas = <HTMLCanvasElement>document.getElementById("carCanvas")!;
+  carCanvas.width = 400;
 
-  const road = new Road(canvas.width / 2, canvas.width * 0.9);
+  const networkCanvas = <HTMLCanvasElement>(
+    document.getElementById("networkCanvas")!
+  );
+  networkCanvas.width = 500;
+
+  const road = new Road(carCanvas.width / 2, carCanvas.width * 0.9);
   const traffic = [
     new Car({
       x: road.getLaneCenter(1),
@@ -23,19 +29,28 @@ export default function startUpApp() {
     controlType: "MAIN",
   });
 
-  const ctx = canvas.getContext("2d")!;
+  const carCtx = carCanvas.getContext("2d")!;
+  const networkCtx = networkCanvas.getContext("2d")!;
   animate();
 
   function animate() {
     car.update(road.borders, traffic);
     const drawTraffic = addTraffic();
 
-    canvas.height = window.innerHeight;
-    ctx.save();
-    ctx.translate(0, -car.y + canvas.height * 0.7);
-    road.draw(ctx);
+    carCanvas.height = window.innerHeight;
+    networkCanvas.height = window.innerHeight;
+
+    carCtx.save();
+    carCtx.translate(0, -car.y + carCanvas.height * 0.7);
+
+    road.draw(carCtx);
+
     drawTraffic();
-    car.draw(ctx);
+
+    car.draw(carCtx);
+    carCtx.restore();
+
+    Visualizer.drawNetwork(networkCtx, car.brain);
     requestAnimationFrame(animate);
   }
 
@@ -50,7 +65,7 @@ export default function startUpApp() {
     /** Draw the cars representing traffic on road */
     return () => {
       for (let i = 0; i < traffic.length; i++) {
-        traffic[i].draw(ctx);
+        traffic[i].draw(carCtx);
       }
     };
   }
