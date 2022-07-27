@@ -2,23 +2,44 @@ import { CarConfig, BordersSections, CarPolygonPoints } from "../types";
 import { Controls } from "./Controls";
 import { Sensor } from "./Sensor";
 
+/**
+ * Car class to create car and add functionality of car
+ */
 export class Car {
+  /** denotes the horizontal axis of the car i.e left to right */
   x: number;
+  /** denotes the vertical axis of the car i.e top to bottom */
   y: number;
+  /** denotes the width in px of the car*/
   width: number;
+  /** denotes the height in px of the car*/
   height: number;
+  /** Monitors the controls of car, used to move car on canvas based of arrow inputs */
   controls: Controls;
+  /** the speed at which the car is travelling */
   speed: number = 0;
+  /** Denotes the change in speed of the car */
   acceleration: number = 0.2;
+  /** Denotes the Maximum speed he car can reach */
   maxSpeed: number = 3;
+  /** Denotes the friction car would apply to road */
   friction: number = 0.05;
+  /**angle of the car */
   angle: number = 0;
+  /** Used for car sensors(rays beaming off car) */
   sensor: Sensor;
   /**Used to evaluate if car gets damaged */
   isDamaged: false;
   /**Used to map points of the car */
   polygon: CarPolygonPoints[] = [];
 
+  /**
+   * Create a car.
+   * @param {number} parameters.x - The initial horizontal axis of the car i.e left to right.
+   * @param {number} parameters.y - The initial vertical axis of the car i.e top to bottom.
+   * @param {number} parameters.width - The width of the car.
+   * @param {number} parameters.height - The height of the car.
+   */
   constructor(parameters: CarConfig) {
     this.x = parameters.x;
     this.y = parameters.y;
@@ -28,6 +49,7 @@ export class Car {
     this.sensor = new Sensor(this);
     this.controls = new Controls();
   }
+  /** Draw the car on a given canvas */
   draw(ctx: CanvasRenderingContext2D) {
     //Removed cause now we draw the car based of the polygon points so we can track the points
     // ctx.save();
@@ -51,6 +73,7 @@ export class Car {
 
     this.sensor.draw(ctx);
   }
+  /** Update and apply the various changes on car */
   update(roadBorders: BordersSections) {
     this.#move();
     this.polygon = this.#createPolygon();
@@ -90,6 +113,7 @@ export class Car {
 
     return points;
   }
+  /** Move the car based of the change in Car.controls */
   #move() {
     /**Foward and reverse implmentation */
     if (this.controls.forward) {
