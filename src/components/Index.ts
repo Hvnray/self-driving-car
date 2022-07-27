@@ -12,7 +12,7 @@ export default function startUpApp() {
       y: -100,
       width: 60,
       height: 100,
-      maxSpeed:2
+      maxSpeed: 2,
     }),
   ];
   const car = new Car({
@@ -20,22 +20,22 @@ export default function startUpApp() {
     y: 100,
     width: 60,
     height: 100,
-    controlType:'MAIN'
+    controlType: "MAIN",
   });
 
   const ctx = canvas.getContext("2d")!;
   animate();
 
   function animate() {
-    car.update(road.borders);
+    car.update(road.borders, traffic);
     const drawTraffic = addTraffic();
 
     canvas.height = window.innerHeight;
     ctx.save();
     ctx.translate(0, -car.y + canvas.height * 0.7);
     road.draw(ctx);
-    car.draw(ctx);
     drawTraffic();
+    car.draw(ctx);
     requestAnimationFrame(animate);
   }
 
@@ -45,7 +45,7 @@ export default function startUpApp() {
    */
   function addTraffic() {
     for (let i = 0; i < traffic.length; i++) {
-      traffic[i].update(road.borders);
+      traffic[i].update(road.borders, []);
     }
     /** Draw the cars representing traffic on road */
     return () => {

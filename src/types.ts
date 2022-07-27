@@ -32,7 +32,7 @@ export interface BorderPostions {
 /** Represents the control type a car instance can possess*/
 export type ControlType = "MAIN" | "DUMMY";
 
-/** Represents an always 2 lenght Array of  @see BorderPostions */
+/** Represents an always 2 lenght tuple of  @see BorderPostions */
 export type BorderPostionsTuple = [BorderPostions, BorderPostions];
 
 /**Represents and array of BorderPostionsTuple */

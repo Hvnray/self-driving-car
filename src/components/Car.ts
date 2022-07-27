@@ -28,7 +28,7 @@ export class Car {
   /**angle of the car */
   angle: number = 0;
   /** Used for car sensors(rays beaming off car) */
-  sensor: Sensor;
+  sensor?: Sensor;
   /**Used to evaluate if car gets damaged */
   isDamaged: boolean;
   /**Used to map points of the car */
@@ -51,7 +51,9 @@ export class Car {
     this.height = parameters.height;
     this.maxSpeed = parameters.maxSpeed || 3;
     this.isDamaged = false;
-    this.sensor = new Sensor(this);
+    if (parameters.controlType == "MAIN") {
+      this.sensor = new Sensor(this);
+    }
     this.controls = new Controls(parameters.controlType || "DUMMY");
   }
   /** Draw the car on a given canvas */
@@ -65,12 +67,12 @@ export class Car {
     // ctx.rect(-this.width / 2, -this.height / 2, this.width, this.height);
     // ctx.fill();
     // ctx.restore();
-
     //set the fill color of car incase car is damageds
+    const carColor = this.sensor ? "blue" : "black";
     if (this.isDamaged) {
       ctx.fillStyle = "red";
     } else {
-      ctx.fillStyle = "black";
+      ctx.fillStyle = carColor;
     }
     //draw car based of polygon points
     ctx.beginPath();
@@ -81,15 +83,17 @@ export class Car {
       ctx.lineTo(this.polygon[index].x, this.polygon[index].y);
     }
     ctx.fill();
-
-    this.sensor.draw(ctx);
+    // draw sensor first
+    if (this.sensor) {
+      this.sensor.draw(ctx);
+    }
   }
   /** Update and apply the various changes on car */
-  update(roadBorders: BordersSections) {
+  update(roadBorders: BordersSections, traffic: Car[]) {
     if (!this.isDamaged) {
       this.#move();
       this.polygon = this.#createPolygon();
-      this.isDamaged = this.#assessDamages(roadBorders);
+      this.isDamaged = this.#assessDamages(roadBorders, traffic);
     }
     // else {
     //   if (window.confirm("Your Car is Destroyed, Do you want to Fix?")) {
@@ -97,16 +101,23 @@ export class Car {
     //     this.isDamaged = false;
     //   }
     // }
-    this.sensor.update(roadBorders);
+    if (this.sensor) {
+      this.sensor.update(roadBorders, traffic);
+    }
   }
   /**
    * Check if car colides with borders and traffic and deal damage
    * @param {BordersSections} roadBorders the road boarders to check if car collides
    * @returns {boolean} true if touches borders else false
    */
-  #assessDamages(roadBorders: BordersSections): boolean {
+  #assessDamages(roadBorders: BordersSections, traffic: Car[]): boolean {
     for (let index = 0; index < roadBorders.length; index++) {
       if (polygonsIntersect(this.polygon, roadBorders[index])) {
+        return true;
+      }
+    }
+    for (let index = 0; index < traffic.length; index++) {
+      if (polygonsIntersect(this.polygon, traffic[index].polygon)) {
         return true;
       }
     }

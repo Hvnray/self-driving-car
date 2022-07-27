@@ -37,13 +37,12 @@ export class Sensor {
     this.rays = [];
     this.readings = [];
   }
-  update(roadBorders: BordersSections) {
+  update(roadBorders: BordersSections, traffic: Car[]) {
     this.#castRays();
-    this.#setReadings(roadBorders);
+    this.#setReadings(roadBorders, traffic);
   }
   draw(ctx: CanvasRenderingContext2D) {
-    let i: number;
-    for (i = 0; i < this.rayCount; i++) {
+    for (let i = 0; i < this.rayCount; i++) {
       let end = this.rays[i][1];
       if (this.readings[i]) {
         end = this.readings[i]!;
@@ -57,7 +56,7 @@ export class Sensor {
 
       ctx.beginPath();
       ctx.lineWidth = 2;
-      ctx.strokeStyle = "black";
+      ctx.strokeStyle = "red";
       ctx.moveTo(this.rays[i][1].x, this.rays[i][1].y);
       ctx.lineTo(end.x, end.y);
       ctx.stroke();
@@ -81,21 +80,23 @@ export class Sensor {
       this.rays.push([start, end]);
     }
   }
-  #setReadings(roadBorders: BordersSections) {
+  #setReadings(roadBorders: BordersSections, traffic: Car[]) {
     this.readings = [];
     let index: number;
     for (index = 0; index < this.rays.length; index++) {
-      this.readings.push(this.#getReadings(this.rays[index], roadBorders));
+      this.readings.push(
+        this.#getReadings(this.rays[index], roadBorders, traffic)
+      );
     }
   }
   #getReadings(
     ray: BorderPostionsTuple,
-    roadBorders: BordersSections
+    roadBorders: BordersSections,
+    traffic: Car[]
   ) {
-    /**used to store points where car touches either border or other cars */
+    /**used to store points where car touches either border */
     let touches: BorderPostionsAndOffset[] = [];
-    let index: number;
-    for (index = 0; index < roadBorders.length; index++) {
+    for (let index = 0; index < roadBorders.length; index++) {
       const touch = getIntersection(
         ray[0],
         ray[1],
@@ -107,6 +108,21 @@ export class Sensor {
       }
     }
 
+    /**used to store points where car touches other cars in traffic */
+    for (let i = 0; i < traffic.length; i++) {
+      const polygon = traffic[i].polygon;
+      for (let j = 0; j < polygon.length; j++) {
+        const touch = getIntersection(
+          ray[0],
+          ray[1],
+          polygon[j],
+          polygon[(j + 1) % polygon.length]
+        );
+        if (touch) {
+          touches.push(touch);
+        }
+      }
+    }
     if (touches.length == 0) {
       return null;
     } else {
