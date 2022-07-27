@@ -1,4 +1,4 @@
-import { BordersSections, CarConfig } from "../types";
+import { CarConfig, BordersSections, CarPolygonPoints } from "../types";
 import { Controls } from "./Controls";
 import { Sensor } from "./Sensor";
 
@@ -14,29 +14,81 @@ export class Car {
   friction: number = 0.05;
   angle: number = 0;
   sensor: Sensor;
+  /**Used to evaluate if car gets damaged */
+  isDamaged: false;
+  /**Used to map points of the car */
+  polygon: CarPolygonPoints[] = [];
 
   constructor(parameters: CarConfig) {
     this.x = parameters.x;
     this.y = parameters.y;
     this.width = parameters.width;
     this.height = parameters.height;
+    this.isDamaged = false;
     this.sensor = new Sensor(this);
     this.controls = new Controls();
   }
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.save();
-    ctx.translate(this.x, this.y);
-    ctx.rotate(-this.angle);
+    //Removed cause now we draw the car based of the polygon points so we can track the points
+    // ctx.save();
+    // ctx.translate(this.x, this.y);
+    // ctx.rotate(-this.angle);
 
+    // ctx.beginPath();
+    // ctx.rect(-this.width / 2, -this.height / 2, this.width, this.height);
+    // ctx.fill();
+    // ctx.restore();
+
+    //draw car based of polygon points
     ctx.beginPath();
-    ctx.rect(-this.width / 2, -this.height / 2, this.width, this.height);
+    //move to top right
+    ctx.moveTo(this.polygon[0].x, this.polygon[0].y);
+    //draw line to remaning polygon points
+    for (let index = 1; index < this.polygon.length; index++) {
+      ctx.lineTo(this.polygon[index].x, this.polygon[index].y);
+    }
     ctx.fill();
-    ctx.restore();
+
     this.sensor.draw(ctx);
   }
   update(roadBorders: BordersSections) {
     this.#move();
+    this.polygon = this.#createPolygon();
     this.sensor.update(roadBorders);
+  }
+  /** Creates the current points(borders?) of the car */
+  #createPolygon(): CarPolygonPoints[] {
+    /**array to save each sides(points) of the car*/
+    const points: CarPolygonPoints[] = [];
+
+    /**get the radius of the car by getting the hypothenus (diameter) of object(car) and divide by 2*/
+    const radius = Math.hypot(this.width, this.height) / 2;
+
+    /**Get the angle of the radius on the car */
+    const alpha = Math.atan2(this.width, this.height);
+
+    points.push({
+      side: "topRight",
+      x: this.x - Math.sin(this.angle - alpha) * radius,
+      y: this.y - Math.cos(this.angle - alpha) * radius,
+    });
+    points.push({
+      side: "topLeft",
+      x: this.x - Math.sin(this.angle + alpha) * radius,
+      y: this.y - Math.cos(this.angle + alpha) * radius,
+    });
+    points.push({
+      side: "bottomRight", //Math.PI adds 180 degrees to angle so it reflects the bottom
+      x: this.x - Math.sin(Math.PI + this.angle - alpha) * radius,
+      y: this.y - Math.cos(Math.PI + this.angle - alpha) * radius,
+    });
+    points.push({
+      side: "bottomLeft", //Math.PI adds 180 degrees to angle so it reflects the bottom
+      x: this.x - Math.sin(Math.PI + this.angle + alpha) * radius,
+      y: this.y - Math.cos(Math.PI + this.angle + alpha) * radius,
+    });
+
+    return points;
   }
   #move() {
     /**Foward and reverse implmentation */

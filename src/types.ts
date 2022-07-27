@@ -19,6 +19,8 @@ export type BorderPostionsTuple = [BorderPostions, BorderPostions];
 
 export type BordersSections = BorderPostionsTuple[];
 
+export type CarPolygonPoints = BorderPostions & { side: string };
+
 export type BorderPostionsAndOffset = BorderPostions & { offset: number };
 
 export type BorderPostionsAndOffsetOrNull = BorderPostionsAndOffset | null;
