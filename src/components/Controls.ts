@@ -1,3 +1,5 @@
+import { ControlType } from "../types";
+
 /**
  * Controls class describes the Button Controls for Moving our Car around the Canvas(Road)
  */
@@ -11,12 +13,23 @@ export class Controls {
   /** `left` indicates the car Left arrow Key is being pressed down, thus car is moving left on canvas */
   left: boolean;
 
-  constructor() {
+  /**
+   *Controls class describes the Button Controls for Moving our Car around the Canvas(Road)
+   * @param {ControlType} controlType - Sets controlType for Current Car.
+   */
+  constructor(controlType: ControlType) {
     this.forward = false;
     this.reverse = false;
     this.left = false;
     this.right = false;
-    this.#addKeyboardEventListener();
+    switch (controlType) {
+      case "MAIN":
+        this.#addKeyboardEventListener();
+        break;
+      case "DUMMY":
+        this.forward = true;
+        break;
+    }
   }
   /** `#addKeyboardEventListener` private method attaches event listener to arrow keys */
   #addKeyboardEventListener() {

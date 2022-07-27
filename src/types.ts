@@ -11,6 +11,12 @@ export interface CarConfig {
   width: number;
   /**The height of the car */
   height: number;
+
+  /**Denotes the Maximum speed the car can reach */
+  maxSpeed?: number;
+
+  /** Represents the control type a car instance can possess*/
+  controlType?: ControlType;
 }
 /**
  * Represents the border
@@ -22,6 +28,9 @@ export interface BorderPostions {
   /**`y` represents the vertical axis, top - bottom  */
   y: number;
 }
+
+/** Represents the control type a car instance can possess*/
+export type ControlType = "MAIN" | "DUMMY";
 
 /** Represents an always 2 lenght Array of  @see BorderPostions */
 export type BorderPostionsTuple = [BorderPostions, BorderPostions];
