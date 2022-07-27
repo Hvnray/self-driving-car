@@ -3,7 +3,7 @@ import { Controls } from "./Controls";
 import { Sensor } from "./Sensor";
 
 /**
- * Car class to create car and add functionality of car
+ * @class Car class to create car and add functionality of car
  */
 export class Car {
   /** denotes the horizontal axis of the car i.e left to right */
@@ -35,6 +35,7 @@ export class Car {
 
   /**
    * Create a car.
+   * @implements {CarConfig}
    * @param {number} parameters.x - The initial horizontal axis of the car i.e left to right.
    * @param {number} parameters.y - The initial vertical axis of the car i.e top to bottom.
    * @param {number} parameters.width - The width of the car.
@@ -79,7 +80,9 @@ export class Car {
     this.polygon = this.#createPolygon();
     this.sensor.update(roadBorders);
   }
-  /** Creates the current points(borders?) of the car */
+  /** Creates the current points(borders?) of the car
+   * @return {CarPolygonPoints[]} the new points(polygon) of car
+   */
   #createPolygon(): CarPolygonPoints[] {
     /**array to save each sides(points) of the car*/
     const points: CarPolygonPoints[] = [];

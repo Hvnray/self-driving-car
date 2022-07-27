@@ -1,7 +1,7 @@
 import {
   BorderPostionsAndOffset,
   BordersSections,
-  BorderPostionsAndOffsetOrNull,
+  OrNull,
   BorderPostionsTuple,
 } from "../types";
 import { getIntersection, lerp } from "../utils";
@@ -22,7 +22,7 @@ export class Sensor {
   /**Rays array holds each rayCount Beem in each index depending on ray count */
   rays: BordersSections;
   /**`Readings` array holds each border distance from rays (used to show in rader goes past border or traffic)*/
-  readings: BorderPostionsAndOffsetOrNull[];
+  readings: OrNull<BorderPostionsAndOffset>[];
 
   constructor(
     car: Car,

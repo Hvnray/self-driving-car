@@ -43,7 +43,7 @@ export class Road {
     let index: number;
     // draw the lanes without drawing the boarders
     for (index = 1; index < this.laneCount; index++) {
-      const x = this.#linearInterpolation(
+      const x = lerp(
         this.left,
         this.right,
         index / this.laneCount
@@ -72,8 +72,5 @@ export class Road {
       laneWidth / 2 +
       Math.min(laneIndex, this.laneCount - 1) * laneWidth
     );
-  }
-  #linearInterpolation(left: number, right: number, lanePercent: number) {
-    return lerp(left, right, lanePercent);
   }
 }

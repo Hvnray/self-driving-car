@@ -1,12 +1,20 @@
+/**
+ * Interface the Car Constructor
+ * @interface CarConfig
+ */
 export interface CarConfig {
+  /** The initial horizontal axis of the car i.e left to right*/
   x: number;
+  /** The initial vertical axis of the car i.e top to bottom*/
   y: number;
+  /** The width of the car*/
   width: number;
+  /**The height of the car */
   height: number;
 }
-
 /**
  * Represents the border
+ * @interface BorderPostions
  */
 export interface BorderPostions {
   /**`x` represents the horizontal axis, left - right  */
@@ -15,12 +23,27 @@ export interface BorderPostions {
   y: number;
 }
 
+/** Represents an always 2 lenght Array of  @see BorderPostions */
 export type BorderPostionsTuple = [BorderPostions, BorderPostions];
 
+/**Represents and array of BorderPostionsTuple */
 export type BordersSections = BorderPostionsTuple[];
 
-export type CarPolygonPoints = BorderPostions & { side: string };
-
-export type BorderPostionsAndOffset = BorderPostions & { offset: number };
-
-export type BorderPostionsAndOffsetOrNull = BorderPostionsAndOffset | null;
+/**
+ * Represents the CarPolygonPoints (sides)
+ * @implements {BorderPostions}
+ */
+export interface CarPolygonPoints extends BorderPostions {
+  /** Name of the current side of polygon */
+  side: string;
+}
+/**
+ * Represents the BorderPostions (sides) and Offset
+ * @implements {BorderPostions}
+ */
+export interface BorderPostionsAndOffset extends BorderPostions {
+  /** Current offset to BorderPosition */
+  offset: number;
+}
+/**Interface to represent a given Interface or null */
+export type OrNull<Type> = Type | null;
