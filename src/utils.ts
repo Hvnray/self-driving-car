@@ -1,4 +1,4 @@
-import { BorderPostions, BorderPostionsAndOffset } from "./types";
+import { BorderPostions, BorderPostionsAndOffset, OrNull } from "./types";
 
 /**
  * Lerp - `Linear Interpolation Util`
@@ -10,12 +10,21 @@ import { BorderPostions, BorderPostionsAndOffset } from "./types";
 export function lerp(A: number, B: number, t: number): number {
   return A + (B - A) * t;
 }
+
+/**
+ * getIntersection - `Line Intersection Util`
+ * @param {BorderPostions} A point lines 
+ * @param {BorderPostions} B point lines 
+ * @param {BorderPostions} C point lines 
+ * @param {BorderPostions} D point lines 
+ * @returns {OrNull<BorderPostionsAndOffset>} Linear Interpolation `OrNull<BorderPostionsAndOffset>`
+ */
 export function getIntersection(
   A: BorderPostions,
   B: BorderPostions,
   C: BorderPostions,
   D: BorderPostions
-): BorderPostionsAndOffset | null {
+): OrNull<BorderPostionsAndOffset> {
   const tTop = (D.x - C.x) * (A.y - C.y) - (D.y - C.y) * (A.x - C.x);
   const uTop = (C.y - A.y) * (A.x - B.x) - (C.x - A.x) * (A.y - B.y);
   const bottom = (D.y - C.y) * (B.x - A.x) - (D.x - C.x) * (B.y - A.y);
