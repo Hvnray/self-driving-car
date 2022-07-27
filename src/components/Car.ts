@@ -1,6 +1,7 @@
 import { CarConfig, BordersSections, CarPolygonPoints } from "../types";
 import { polygonsIntersect } from "../utils";
 import { Controls } from "./Controls";
+import { NeuralNetwork } from "./Network";
 import { Sensor } from "./Sensor";
 
 /**
@@ -33,6 +34,10 @@ export class Car {
   isDamaged: boolean;
   /**Used to map points of the car */
   polygon: CarPolygonPoints[] = [];
+  /**Neural Network */
+  brain?: NeuralNetwork;
+  /** Denotes if car to use Neural Network */
+  useBrain: boolean;
 
   /**
    * Create a car.
@@ -51,8 +56,11 @@ export class Car {
     this.height = parameters.height;
     this.maxSpeed = parameters.maxSpeed || 3;
     this.isDamaged = false;
+    this.useBrain = parameters.controlType === "MAIN";
     if (parameters.controlType == "MAIN") {
       this.sensor = new Sensor(this);
+      /** assign the ray counts as the inputCount(neorons),random middle layer,and 4 for output layer(signifies car controls) */
+      this.brain = new NeuralNetwork([this.sensor.rayCount, 6, 4]);
     }
     this.controls = new Controls(parameters.controlType || "DUMMY");
   }
@@ -103,7 +111,22 @@ export class Car {
     // }
     if (this.sensor) {
       this.sensor.update(roadBorders, traffic);
+      //get sensor offsets
+      const offsets = this.sensor.readings.map((s) =>
+        s == null ? 0 : 1 - s.offset
+      );
+      //brain is defined cause sensor is defined 1.e look at constructor
+      const outputs = NeuralNetwork.feedForward(offsets, this.brain!);
+      if (this.useBrain) {
+        this.controls.forward = this.#convertNumberToBoolean(outputs[0]);
+        this.controls.left = this.#convertNumberToBoolean(outputs[1]);
+        this.controls.right = this.#convertNumberToBoolean(outputs[2]);
+        this.controls.reverse = this.#convertNumberToBoolean(outputs[3]);
+      }
     }
+  }
+  #convertNumberToBoolean(val: number) {
+    return val > 0 ? true : false;
   }
   /**
    * Check if car colides with borders and traffic and deal damage

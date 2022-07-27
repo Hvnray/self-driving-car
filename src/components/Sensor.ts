@@ -26,8 +26,8 @@ export class Sensor {
 
   constructor(
     car: Car,
-    rayCount = 8,
-    rayLength = 150,
+    rayCount = 5,
+    rayLength = 300,
     raySpreed = Math.PI / 2
   ) {
     this.car = car;
