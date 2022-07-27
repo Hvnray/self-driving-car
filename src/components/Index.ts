@@ -33,7 +33,7 @@ export default function startUpApp() {
   const networkCtx = networkCanvas.getContext("2d")!;
   animate();
 
-  function animate() {
+  function animate(time?: number) {
     car.update(road.borders, traffic);
     const drawTraffic = addTraffic();
 
@@ -49,8 +49,8 @@ export default function startUpApp() {
 
     car.draw(carCtx);
     carCtx.restore();
-
-    Visualizer.drawNetwork(networkCtx, car.brain);
+    networkCtx.lineDashOffset = -time!/50;
+    Visualizer.drawNetwork(networkCtx, car.brain!);
     requestAnimationFrame(animate);
   }
 
